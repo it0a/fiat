@@ -8,6 +8,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"sort"
 )
 
 type Event struct {
@@ -17,7 +18,7 @@ type Event struct {
 
 var BufWriter bufio.Writer
 
-var FreqStatMap = map[byte]uint32{
+var FreqStatMap = map[int]uint32{
 	1:   0,
 	2:   0,
 	3:   0,
@@ -469,6 +470,23 @@ func attachInterrupt() {
 	}()
 }
 
+type sortedFreqStatMap struct {
+	m map[int]uint32
+	k []int
+}
+
+func (sm *sortedFreqStatMap) Len() int {
+	return len(sm.m)
+}
+
+func (sm *sortedFreqStatMap) Less(i, j int) bool {
+	return sm.m[sm.k[i]] > sm.m[sm.k[j]]
+}
+
+func (sm *sortedFreqStatMap) Swap(i, j int) {
+	sm.k[i], sm.k[j] = sm.k[j], sm.k[i]
+}
+
 func viewStatistics() {
 	statFile, err := os.Open("/tmp/fiat")
 	if err != nil {
@@ -482,13 +500,23 @@ func viewStatistics() {
 			fmt.Println("EOF")
 			break
 		}
-		FreqStatMap[code] = FreqStatMap[code] + binary.LittleEndian.Uint32([]byte{freq, 0, 0, 0})
+		FreqStatMap[int(code)] = FreqStatMap[int(code)] + binary.LittleEndian.Uint32([]byte{freq, 0, 0, 0})
 	}
-	for key := range FreqStatMap {
-		if FreqStatMap[key] > 0 {
-			fmt.Printf("Key/Freq: %s => %v\n", CodeMap[key], FreqStatMap[key])
+	sm := new(sortedFreqStatMap)
+	sm.m = FreqStatMap
+	sm.k = make([]int, len(sm.m))
+	i := 0
+	for key, _ := range FreqStatMap {
+		sm.k[i] = key
+		i++
+	}
+	sort.Sort(sm)
+	for i := 0; i < len(sm.m); i++ {
+		if sm.m[sm.k[i]] > 0 {
+			fmt.Printf("Key/Freq: %s => %v\n", CodeMap[byte(sm.k[i])], sm.m[sm.k[i]])
 		}
 	}
+
 }
 
 func main() {
