@@ -14,6 +14,8 @@ type Event struct {
 	Value byte
 }
 
+var BufWriter bufio.Writer
+
 var FreqMap = map[byte]uint32{
 	1:   0,
 	2:   0,
@@ -460,25 +462,18 @@ var ValueMap = map[int32]string{
 	2: "HOLDING",
 }
 
-func main() {
-	app := cli.NewApp()
-	app.Name = "fiat"
-	app.Usage = "free input analysis tool"
-	app.Version = "0.0.1"
-	app.Action = func(c *cli.Context) {
-		listen()
-	}
-	app.Run(os.Args)
-}
-
 func DecodeEvent(buf []byte, ev *Event) {
 	ev.Code = buf[18]
 	ev.Value = buf[20]
 }
 
+func NewEventBuffer() []byte {
+	return make([]byte, 24)
+}
+
 func ReadEvent(f *os.File) Event {
 	var ev Event
-	buf := make([]byte, 24)
+	buf := NewEventBuffer()
 	n, err := f.Read(buf)
 	if err != nil {
 		log.Fatal(n, err)
@@ -487,24 +482,42 @@ func ReadEvent(f *os.File) Event {
 	return ev
 }
 
+func blitFrequencies(freqMap map[byte]uint32) {
+	for key := range freqMap {
+		if freqMap[key] > 0 {
+			fmt.Printf("%s => %v\n", CodeMap[key], freqMap[key])
+		}
+	}
+}
+
 func listen() {
 	kbd, err := os.Open("/dev/input/event0")
+	if err != nil {
+		log.Fatal(err.Error())
+	}
 	defer kbd.Close()
 	tmp, err := os.Create("/tmp/fiat")
-	defer tmp.Close()
-	w := bufio.NewWriter(tmp)
 	if err != nil {
-		println(err.Error())
-	} else {
-		attachInterrupt()
-		for {
-			ev := ReadEvent(kbd)
-			if ev.Code >= 1 && ev.Code <= 240 && ev.Value == 1 {
-				FreqMap[ev.Code]++
-				fmt.Printf("%v => %v\n", CodeMap[ev.Code], FreqMap[ev.Code])
-				w.WriteByte(ev.Code)
-			}
-			w.Flush()
+		log.Fatal(err.Error())
+	}
+	defer func() {
+		if err := tmp.Close(); err != nil {
+			log.Fatal(err.Error())
+		}
+	}()
+	BufWriter := bufio.NewWriterSize(tmp, 32)
+	defer func() {
+		if err := BufWriter.Flush(); err != nil {
+			log.Fatal(err.Error())
+		}
+	}()
+	attachInterrupt()
+	for {
+		ev := ReadEvent(kbd)
+		if ev.Code >= 1 && ev.Code <= 240 && ev.Value == 1 {
+			FreqMap[ev.Code] = FreqMap[ev.Code] + 1
+			blitFrequencies(FreqMap)
+			BufWriter.WriteByte(ev.Code)
 		}
 	}
 }
@@ -515,7 +528,23 @@ func attachInterrupt() {
 	go func() {
 		for sig := range c {
 			log.Printf("Captured %v, stopping data capture", sig)
+			if err := BufWriter.Flush(); err != nil {
+				log.Fatal("FAILED TO FLUSH THE BUFFER! YOUR DATA MAY BE LOST. ", err.Error())
+			} else {
+				log.Println("FLUSH OK!")
+			}
 			os.Exit(1)
 		}
 	}()
+}
+
+func main() {
+	app := cli.NewApp()
+	app.Name = "fiat"
+	app.Usage = "free input analysis tool"
+	app.Version = "0.0.1"
+	app.Action = func(c *cli.Context) {
+		listen()
+	}
+	app.Run(os.Args)
 }
