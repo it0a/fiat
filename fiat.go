@@ -16,7 +16,7 @@ type Event struct {
 
 var BufWriter bufio.Writer
 
-var FreqMap = map[byte]uint32{
+var FreqMap = map[byte]byte{
 	1:   0,
 	2:   0,
 	3:   0,
@@ -141,99 +141,6 @@ var FreqMap = map[byte]uint32{
 	124: 0,
 	125: 0,
 	126: 0,
-	127: 0,
-	128: 0,
-	129: 0,
-	130: 0,
-	131: 0,
-	132: 0,
-	133: 0,
-	134: 0,
-	135: 0,
-	136: 0,
-	137: 0,
-	138: 0,
-	139: 0,
-	140: 0,
-	141: 0,
-	142: 0,
-	143: 0,
-	144: 0,
-	145: 0,
-	146: 0,
-	147: 0,
-	148: 0,
-	149: 0,
-	150: 0,
-	151: 0,
-	152: 0,
-	153: 0,
-	154: 0,
-	155: 0,
-	156: 0,
-	157: 0,
-	158: 0,
-	159: 0,
-	160: 0,
-	161: 0,
-	162: 0,
-	163: 0,
-	164: 0,
-	165: 0,
-	166: 0,
-	167: 0,
-	168: 0,
-	169: 0,
-	170: 0,
-	171: 0,
-	172: 0,
-	173: 0,
-	174: 0,
-	175: 0,
-	176: 0,
-	177: 0,
-	178: 0,
-	179: 0,
-	180: 0,
-	183: 0,
-	184: 0,
-	185: 0,
-	186: 0,
-	187: 0,
-	188: 0,
-	189: 0,
-	190: 0,
-	191: 0,
-	192: 0,
-	193: 0,
-	194: 0,
-	200: 0,
-	201: 0,
-	202: 0,
-	203: 0,
-	205: 0,
-	206: 0,
-	207: 0,
-	208: 0,
-	209: 0,
-	210: 0,
-	211: 0,
-	212: 0,
-	213: 0,
-	214: 0,
-	215: 0,
-	216: 0,
-	217: 0,
-	218: 0,
-	219: 0,
-	220: 0,
-	221: 0,
-	222: 0,
-	223: 0,
-	224: 0,
-	225: 0,
-	226: 0,
-	240: 0,
 }
 
 var CodeMap = map[byte]string{
@@ -320,17 +227,8 @@ var CodeMap = map[byte]string{
 	81:  "KP3",
 	82:  "KP0",
 	83:  "KPDOT",
-	85:  "ZENKAKUHANKAKU",
-	86:  "102ND",
 	87:  "F11",
 	88:  "F12",
-	89:  "RO",
-	90:  "KATAKANA",
-	91:  "HIRAGANA",
-	92:  "HENKAN",
-	93:  "KATAKANAHIRAGANA",
-	94:  "MUHENKAN",
-	95:  "KPJPCOMMA",
 	96:  "KPENTER",
 	97:  "RIGHTCTRL",
 	98:  "KPSLASH",
@@ -347,116 +245,15 @@ var CodeMap = map[byte]string{
 	109: "PAGEDOWN",
 	110: "INSERT",
 	111: "DELETE",
-	112: "MACRO",
-	113: "MUTE",
-	114: "VOLUMEDOWN",
-	115: "VOLUMEUP",
-	116: "POWER",
 	117: "KPEQUAL",
 	118: "KPPLUSMINUS",
 	119: "PAUSE",
 	121: "KPCOMMA",
-	122: "HANGUEL",
-	123: "HANJA",
-	124: "YEN",
 	125: "LEFTMETA",
 	126: "RIGHTMETA",
-	127: "COMPOSE",
-	128: "STOP",
-	129: "AGAIN",
-	130: "PROPS",
-	131: "UNDO",
-	132: "FRONT",
-	133: "COPY",
-	134: "OPEN",
-	135: "PASTE",
-	136: "FIND",
-	137: "CUT",
-	138: "HELP",
-	139: "MENU",
-	140: "CALC",
-	141: "SETUP",
-	142: "SLEEP",
-	143: "WAKEUP",
-	144: "FILE",
-	145: "SENDFILE",
-	146: "DELETEFILE",
-	147: "XFER",
-	148: "PROG1",
-	149: "PROG2",
-	150: "WWW",
-	151: "MSDOS",
-	152: "COFFEE",
-	153: "DIRECTION",
-	154: "CYCLEWINDOWS",
-	155: "MAIL",
-	156: "BOOKMARKS",
-	157: "COMPUTER",
-	158: "BACK",
-	159: "FORWARD",
-	160: "CLOSECD",
-	161: "EJECTCD",
-	162: "EJECTCLOSECD",
-	163: "NEXTSONG",
-	164: "PLAYPAUSE",
-	165: "PREVIOUSSONG",
-	166: "STOPCD",
-	167: "RECORD",
-	168: "REWIND",
-	169: "PHONE",
-	170: "ISO",
-	171: "CONFIG",
-	172: "HOMEPAGE",
-	173: "REFRESH",
-	174: "EXIT",
-	175: "MOVE",
-	176: "EDIT",
-	177: "SCROLLUP",
-	178: "SCROLLDOWN",
-	179: "KPLEFTPAREN",
-	180: "KPRIGHTPAREN",
-	183: "F13",
-	184: "F14",
-	185: "F15",
-	186: "F16",
-	187: "F17",
-	188: "F18",
-	189: "F19",
-	190: "F20",
-	191: "F21",
-	192: "F22",
-	193: "F23",
-	194: "F24",
-	200: "PLAYCD",
-	201: "PAUSECD",
-	202: "PROG3",
-	203: "PROG4",
-	205: "SUSPEND",
-	206: "CLOSE",
-	207: "PLAY",
-	208: "FASTFORWARD",
-	209: "BASSBOOST",
-	210: "PRINT",
-	211: "HP",
-	212: "CAMERA",
-	213: "SOUND",
-	214: "QUESTION",
-	215: "EMAIL",
-	216: "CHAT",
-	217: "SEARCH",
-	218: "CONNECT",
-	219: "FINANCE",
-	220: "SPORT",
-	221: "SHOP",
-	222: "ALTERASE",
-	223: "CANCEL",
-	224: "BRIGHTNESSDOWN",
-	225: "BRIGHTNESSUP",
-	226: "MEDIA",
-	240: "UNKNOWN",
 }
 
-var ValueMap = map[int32]string{
+var ValueMap = map[byte]string{
 	0: "RELEASED",
 	1: "PRESSED",
 	2: "HOLDING",
@@ -482,12 +279,17 @@ func ReadEvent(f *os.File) Event {
 	return ev
 }
 
-func blitFrequencies(freqMap map[byte]uint32) {
-	for key := range freqMap {
-		if freqMap[key] > 0 {
-			fmt.Printf("%s => %v\n", CodeMap[key], freqMap[key])
+func flushFrequencyMap() []byte {
+	buf := []byte{}
+	for key := range FreqMap {
+		if FreqMap[key] > 0 {
+			fmt.Printf("Writing key %s %v times\n", CodeMap[key], FreqMap[key])
+			buf = append(buf, key)
+			buf = append(buf, FreqMap[key])
+			FreqMap[key] = 0
 		}
 	}
+	return buf
 }
 
 func listen() {
@@ -505,7 +307,7 @@ func listen() {
 			log.Fatal(err.Error())
 		}
 	}()
-	BufWriter := bufio.NewWriterSize(tmp, 32)
+	BufWriter := bufio.NewWriterSize(tmp, 64)
 	defer func() {
 		if err := BufWriter.Flush(); err != nil {
 			log.Fatal(err.Error())
@@ -514,10 +316,11 @@ func listen() {
 	attachInterrupt()
 	for {
 		ev := ReadEvent(kbd)
-		if ev.Code >= 1 && ev.Code <= 240 && ev.Value == 1 {
+		if ev.Code >= 1 && ev.Code <= 126 && ev.Value == 1 {
 			FreqMap[ev.Code] = FreqMap[ev.Code] + 1
-			blitFrequencies(FreqMap)
-			BufWriter.WriteByte(ev.Code)
+			if FreqMap[ev.Code] == 8 {
+				BufWriter.Write(flushFrequencyMap())
+			}
 		}
 	}
 }
