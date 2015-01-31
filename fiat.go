@@ -516,7 +516,16 @@ func viewStatistics() {
 			fmt.Printf("Key/Freq: %s => %v\n", CodeMap[byte(sm.k[i])], sm.m[sm.k[i]])
 		}
 	}
+	displayKeyboard()
+}
 
+func displayKeyboard() {
+	fmt.Printf("ESC F1 F2 F3 F4 F5 F6 F7 F8 F9 F10 F11 F12\n")
+	fmt.Printf("~  1  2  3  4  5  6  7  8  9  0  -  +   BS\n")
+	fmt.Printf("TAB  Q  W  E  R  T  Y  U  I  O  P  [  ]  \\\n")
+	fmt.Printf("CAPS  A  S  D  F  G  H  J  K  L  ;  \\'\n")
+	fmt.Printf("LSHIFT Z  X  C  V  B  N  M  ,  .  / RSHIFT\n")
+	fmt.Printf("LCTRL LSUPER LALT SPACE         RALT RCTRL\n")
 }
 
 func main() {
